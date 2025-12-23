@@ -9,11 +9,14 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-      - name: Install Fyne-cross
-        run: go install github.com/fyne-io/fyne-cross@latest
+      - name: Install Dependencies
+        run: |
+          go mod tidy
+          go install github.com/fyne-io/fyne-cross@latest
       - name: Build Android APK
         run: |
-          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -icon icon.png
+          # Perintah ini mengabaikan pengecekan ikon jika icon.png tidak ada
+          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
