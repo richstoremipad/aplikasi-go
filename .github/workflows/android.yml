@@ -6,17 +6,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      # Kita gunakan versi 1.23 sebagai standar yang stabil
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.23'
+          
+      - name: Sync Go Module Version
+        run: |
+          # Perintah ini memaksa go.mod menggunakan versi yang tersedia di server
+          go mod edit -go=1.23
+          go mod tidy
           
       - name: Install Fyne-cross
         run: go install github.com/fyne-io/fyne-cross@latest
         
       - name: Build Android APK
         run: |
-          # Perintah build utama
-          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -icon icon.png
+          # Build tanpa ikon untuk meminimalkan error teknis
+          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -silent
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
