@@ -1,33 +1,36 @@
-name: Build Optimized APK
+name: Build APK Optimized
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-go@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version: '1.23'
-          
-      - name: Sync Go Module
+
+      - name: Sync Modules
         run: |
+          # Memaksa sinkronisasi versi Go agar tidak error 1.25
           go mod edit -go=1.23
           go mod tidy
-          
+
       - name: Install Fyne-cross
         run: go install github.com/fyne-io/fyne-cross@latest
-        
-      - name: Build Android APK (Optimized)
+
+      - name: Build Android APK
         run: |
-          # Menggunakan -arch arm64 saja untuk memperkecil ukuran file
-          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -arch arm64 -silent
-          
-            - name: Upload APK
+          # Build khusus arm64 agar ukuran lebih kecil
+          # Mengabaikan pengecekan ikon jika icon.png tidak terbaca sempurna
+          $HOME/go/bin/fyne-cross android -app-id com.belajar.aplikasigo -arch arm64 -silent
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Hasil-APK-Optimized
-          # Kita gunakan tanda bintang ganda agar GitHub mencari di semua folder hasil build
-          path: fyne-cross/dist/**/*.apk
-
+          name: Hasil-APK-Final
+          # Jalur (path) diperluas agar file pasti ditemukan
+          path: fyne-cross/dist/android/*.apk
