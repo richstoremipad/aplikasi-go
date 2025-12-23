@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Gomobile APK
 on: [push]
 
 jobs:
@@ -7,27 +7,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      # Kita gunakan versi 1.23 sebagai standar yang stabil
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
-          
-      - name: Sync Go Module Version
+
+      - name: Install Android SDK & Gomobile
         run: |
-          # Perintah ini memaksa go.mod menggunakan versi yang tersedia di server
-          go mod edit -go=1.23
+          # Install tool Gomobile
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          # Inisialisasi Gomobile
+          $HOME/go/bin/gomobile init
+          # Rapikan modul
+          go mod init belajar-gomobile || true
           go mod tidy
-          
-      - name: Install Fyne-cross
-        run: go install github.com/fyne-io/fyne-cross@latest
-        
-      - name: Build Android APK
+
+      - name: Build APK with Gomobile
         run: |
-          # Build tanpa ikon untuk meminimalkan error teknis
-          $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -silent
-          
+          # Melakukan build APK
+          $HOME/go/bin/gomobile build -target=android -o aplikasi-kecil.apk .
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Hasil-APK
-          path: fyne-cross/dist/android/*.apk
+          name: Hasil-APK-Gomobile
+          path: aplikasi-kecil.apk
