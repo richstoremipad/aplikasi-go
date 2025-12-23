@@ -24,8 +24,10 @@ jobs:
           # Menggunakan -arch arm64 saja untuk memperkecil ukuran file
           $HOME/go/bin/fyne-cross android -app-id com.belajar.apk -arch arm64 -silent
           
-      - name: Upload APK
+            - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Hasil-APK-Optimized
-          path: fyne-cross/dist/android/*.apk
+          # Kita gunakan tanda bintang ganda agar GitHub mencari di semua folder hasil build
+          path: fyne-cross/dist/**/*.apk
+
